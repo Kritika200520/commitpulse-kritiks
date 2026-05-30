@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { useState, useMemo, useCallback, useEffect, useRef } from 'react';
-import { X, Star, GitFork, Clock, Box } from 'lucide-react';
+import { Star, GitFork, Clock, Box } from 'lucide-react';
 
 const ForceGraph2D = dynamic(() => import('react-force-graph-2d'), { ssr: false });
 
@@ -12,27 +12,7 @@ const FILTER_COLORS = {
   Forks: '#F97316', // Orange
 };
 
-interface GraphNode {
-  id: string;
-  name: string;
-  type: 'User' | 'Repo' | 'Contribution' | 'Fork';
-  val: number;
-  color: string;
-  stats?: {
-    stars?: number;
-    forks?: number;
-    language?: string | null;
-    updatedAt?: string;
-    description?: string | null;
-  };
-  x?: number;
-  y?: number;
-}
-
-interface GraphLink {
-  source: string | GraphNode;
-  target: string | GraphNode;
-}
+import { GraphNode, GraphLink } from '@/types';
 
 interface RepositoryGraphProps {
   data: {

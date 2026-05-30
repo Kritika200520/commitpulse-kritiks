@@ -1,6 +1,6 @@
 // lib/github.ts
 
-import type { ContributionCalendar, ContributionDay } from '@/types';
+import type { ContributionCalendar, ContributionDay, GraphNode, GraphLink } from '@/types';
 import { calculateStreak, aggregateCalendars } from '@/lib/calculate';
 import { DistributedCache } from '@/lib/cache';
 import { LANGUAGE_COLORS } from '@/lib/svg/languageColors';
@@ -782,12 +782,11 @@ export async function fetchContributedRepos(
 }
 
 export async function getFullDashboardData(username: string, options: FetchOptions = {}) {
-  const [profileResult, reposResult, calendarResult, orgsResult, contributedReposResult] =
+  const [profileResult, reposResult, calendarResult, contributedReposResult] =
     await Promise.allSettled([
       fetchUserProfile(username, options),
       fetchUserRepos(username, options),
       fetchGitHubContributions(username, options),
-      fetchUserOrganizations(username, options),
       fetchContributedRepos(username, options),
     ]);
 
@@ -803,7 +802,6 @@ export async function getFullDashboardData(username: string, options: FetchOptio
     calendarResult.status === 'fulfilled'
       ? calendarResult.value
       : ({ totalContributions: 0, weeks: [] } as ContributionCalendar);
-  const orgsData = orgsResult.status === 'fulfilled' ? orgsResult.value : [];
   const contributedReposData =
     contributedReposResult.status === 'fulfilled' ? contributedReposResult.value : [];
 
@@ -890,8 +888,8 @@ export async function getFullDashboardData(username: string, options: FetchOptio
   const insights = buildInsights(streakStats, languages);
 
   // Building Graph Data
-  const nodes: Record<string, unknown>[] = [];
-  const links: Record<string, unknown>[] = [];
+  const nodes: GraphNode[] = [];
+  const links: GraphLink[] = [];
 
   // Central User Node
   nodes.push({
@@ -925,7 +923,16 @@ export async function getFullDashboardData(username: string, options: FetchOptio
   });
 
   // Open Source Contributions
-  contributedReposData.forEach((repo) => {
+  contributedReposData.forEach((repoItem) => {
+    const repo = repoItem as {
+      name: string;
+      nameWithOwner: string;
+      owner?: { login: string };
+      stargazerCount?: number;
+      forkCount?: number;
+      primaryLanguage?: { name: string } | null;
+      updatedAt?: string;
+    };
     nodes.push({
       id: repo.nameWithOwner,
       name: repo.name,

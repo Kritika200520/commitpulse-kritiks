@@ -6,6 +6,7 @@ import { X, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import type { Achievement } from '@/types/dashboard';
+import type { GraphNode, GraphLink } from '@/types';
 
 import RefreshButton from './RefreshButton';
 import ProfileCard from './ProfileCard';
@@ -65,8 +66,8 @@ interface DashboardData {
     commits: number;
   }>;
   graphData: {
-    nodes: Record<string, unknown>[];
-    links: Record<string, unknown>[];
+    nodes: GraphNode[];
+    links: GraphLink[];
   };
 }
 
@@ -568,7 +569,7 @@ export default function DashboardClient({ initialData, username }: DashboardClie
             <AIInsights insights={initialData.insights} />
           </aside>
 
-          {/* Full Width Bottom Section */}
+          {/* Repository Graph Section */}
           <div className="col-span-1 lg:col-span-2 lg:col-start-2">
             <RepositoryGraph data={initialData.graphData} />
           </div>
