@@ -1705,15 +1705,42 @@ describe('fetchOrgMembers', () => {
     expect(members[1]).toBe('bob');
   });
 
-  it('encodes the organization name before using it in the members REST path', async () => {
+  it('encodes the organization name before using it in the members REST path and includes page parameter', async () => {
     vi.mocked(fetch).mockResolvedValue(mockResponse([]));
 
     await fetchOrgMembers('octo/org');
 
     expect(fetch).toHaveBeenCalledWith(
-      'https://api.github.com/orgs/octo%2Forg/members?per_page=50',
+      'https://api.github.com/orgs/octo%2Forg/members?per_page=50&page=1',
       expect.objectContaining({ cache: 'no-store' })
     );
+  });
+
+  it('paginates correctly up to less than perPage returning end', async () => {
+    const page1 = Array.from({ length: 50 }, (_, i) => ({ login: `user${i}` }));
+    const page2 = Array.from({ length: 20 }, (_, i) => ({ login: `user${50 + i}` }));
+
+    vi.mocked(fetch)
+      .mockResolvedValueOnce(mockResponse(page1))
+      .mockResolvedValueOnce(mockResponse(page2));
+
+    const members = await fetchOrgMembers('vercel');
+
+    expect(members).toHaveLength(70);
+    expect(members[0]).toBe('user0');
+    expect(members[69]).toBe('user69');
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('stops paginating at max limit of 4 pages even if pages return 50 members', async () => {
+    const pageData = Array.from({ length: 50 }, (_, i) => ({ login: `user${i}` }));
+
+    vi.mocked(fetch).mockImplementation(async () => mockResponse(pageData));
+
+    const members = await fetchOrgMembers('vercel');
+
+    expect(members).toHaveLength(200);
+    expect(fetch).toHaveBeenCalledTimes(4);
   });
 });
 

@@ -704,16 +704,29 @@ async function fetchReposUncached(
  */
 export async function fetchOrgMembers(orgName: string): Promise<string[]> {
   const encodedOrgName = encodeURIComponent(orgName);
-  const res = await fetchWithRetry(
-    `${GITHUB_REST_URL}/orgs/${encodedOrgName}/members?per_page=50`,
-    {
-      headers: getHeaders(),
-      cache: 'no-store',
-    }
-  );
-  if (!res.ok) throw new Error(`Failed to fetch members for org ${orgName}`);
-  const members = (await res.json()) as { login: string }[];
-  return members.map((m) => m.login);
+  const allMembers: string[] = [];
+  const maxPages = 4;
+  const perPage = 50;
+
+  for (let page = 1; page <= maxPages; page++) {
+    const res = await fetchWithRetry(
+      `${GITHUB_REST_URL}/orgs/${encodedOrgName}/members?per_page=${perPage}&page=${page}`,
+      {
+        headers: getHeaders(),
+        cache: 'no-store',
+      }
+    );
+    if (!res.ok) throw new Error(`Failed to fetch members for org ${orgName}`);
+    const members = (await res.json()) as { login: string }[];
+    if (members.length === 0) break;
+
+    allMembers.push(...members.map((m) => m.login));
+
+    // If the page returned fewer members than perPage, we've reached the end
+    if (members.length < perPage) break;
+  }
+
+  return allMembers;
 }
 
 /**
