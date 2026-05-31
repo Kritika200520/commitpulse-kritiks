@@ -635,6 +635,25 @@ describe('streakParamsSchema — boolean transform fields', () => {
       expect(parse({}).hide_background).toBe(false);
     });
   });
+
+  // ── glow ──────────────────────────────────────────────────────────────────
+  describe('glow', () => {
+    it('returns true when glow="true"', () => {
+      expect(parse({ glow: 'true' }).glow).toBe(true);
+    });
+
+    it('returns true when glow="1"', () => {
+      expect(parse({ glow: '1' }).glow).toBe(true);
+    });
+
+    it('returns false when glow="false"', () => {
+      expect(parse({ glow: 'false' }).glow).toBe(false);
+    });
+
+    it('returns true when glow is omitted', () => {
+      expect(parse({}).glow).toBe(true);
+    });
+  });
 });
 
 describe('ogParamsSchema', () => {
