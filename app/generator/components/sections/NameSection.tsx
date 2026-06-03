@@ -22,7 +22,7 @@ export function NameSection({ value, onChange }: NameSectionProps) {
       <p className="mt-2 text-xs text-gray-400 dark:text-white/30">
         Will appear as:{' '}
         <span className="italic text-gray-600 dark:text-white/50">
-          👋 Hi, I'm {value || 'Your Name'}
+          👋 Hi, I&apos;m {value || 'Your Name'}
         </span>
       </p>
     </SectionCard>
