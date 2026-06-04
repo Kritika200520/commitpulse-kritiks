@@ -14,11 +14,11 @@
     "contributors": "Contributors",
     "documentation": "Documentation",
     "creator": "Creator",
-    "copyright": "© {{year}} CommitPulse. All rights reserved.",
+    "copyright": "\u00a9 {{year}} CommitPulse. All rights reserved.",
     "navigation": "Navigation",
     "resources": "Resources",
     "connect": "Connect",
-    "made_with": "Made with ❤️ for developers",
+    "made_with": "Made with \u2764\ufe0f for developers",
     "home": "Home",
     "compare": "Compare",
     "customization": "Customization",
@@ -77,7 +77,7 @@
   "customize_cta": {
     "studio_badge": "Customization Studio",
     "title": "Want to fine-tune your monolith?",
-    "desc": "Dial in every pixel — swap accent colors, try a dark or neon theme, toggle logarithmic height scaling, and preview changes live before you paste a single line.",
+    "desc": "Dial in every pixel \u2014 swap accent colors, try a dark or neon theme, toggle logarithmic height scaling, and preview changes live before you paste a single line.",
     "btn": "Open Customization Studio"
   },
   "customize": {
@@ -217,7 +217,7 @@
       "downloaded": "Saved Asset!",
       "svg_downloaded": "SVG Downloaded!",
       "json_downloaded": "JSON Downloaded!",
-      "failed": "Failed — try again",
+      "failed": "Failed \u2014 try again",
       "social_channels": "Social Channels",
       "export_options": "Export Options",
       "github_wrapped": "GitHub Wrapped",

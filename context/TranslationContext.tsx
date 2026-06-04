@@ -32,12 +32,12 @@ const translations: Record<Language, any> = {
 
 export const LANGUAGE_LABELS: Record<Language, string> = {
   en: 'English',
-  es: 'Español',
-  hi: 'हिन्दी',
-  fr: 'Français',
-  zh: '简体中文',
-  ja: '日本語',
-  ko: '한국어',
+  es: 'Espa\u00f1ol',
+  hi: '\u0939\u093f\u0928\u094d\u0926\u0940',
+  fr: 'Fran\u00e7ais',
+  zh: '\u7b80\u4f53\u4e2d\u6587',
+  ja: '\u65e5\u672c\u8a9e',
+  ko: '\ud55c\uad6d\uc5b4',
 };
 
 interface TranslationContextType {
@@ -49,9 +49,18 @@ interface TranslationContextType {
 
 const TranslationContext = createContext<TranslationContextType | null>(null);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const getNestedValue = (obj: any, path: string): string => {
-  return path.split('.').reduce((acc, part) => acc && acc[part], obj) || path;
+const getNestedValue = (obj: Record<string, unknown> | null | undefined, path: string): string => {
+  if (!obj) return path;
+  const parts = path.split('.');
+  let current: unknown = obj;
+  for (const part of parts) {
+    if (current && typeof current === 'object' && part in (current as Record<string, unknown>)) {
+      current = (current as Record<string, unknown>)[part];
+    } else {
+      return path;
+    }
+  }
+  return typeof current === 'string' ? current : path;
 };
 
 export function TranslationProvider({ children }: { children: ReactNode }) {
@@ -60,6 +69,10 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
+    // NOTE: Language auto-detection runs client-side after mounting to prevent
+    // Server-Side Rendering (SSR) hydration mismatches. Because the initial SSR
+    // render defaults to English, non-English users may notice a brief flash of
+    // English text on first load.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     const storedLang = localStorage.getItem('language') as Language;
@@ -92,10 +105,10 @@ export function TranslationProvider({ children }: { children: ReactNode }) {
     // If not mounted (Server Side Rendering phase), fallback to English
     const currentLang = mounted ? language : 'en';
     const translationSet = translations[currentLang] || translations.en;
-    let value = getNestedValue(translationSet, path);
+    let value = getNestedValue(translationSet as Record<string, unknown>, path);
 
     if (typeof value !== 'string') {
-      value = getNestedValue(translations.en, path);
+      value = getNestedValue(translations.en as Record<string, unknown>, path);
     }
 
     if (typeof value !== 'string') {
