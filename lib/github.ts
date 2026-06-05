@@ -676,33 +676,9 @@ async function fetchContributionsUncached(
     totalPRs += cached.totalPRs || 0;
     totalIssues += cached.totalIssues || 0;
   }
-  // Inject deterministic Lines of Code (LoC) approximation
-  calendar.weeks.forEach((week) => {
-    week.contributionDays.forEach((day) => {
-      if (day.contributionCount > 0) {
-        let hash1 = 2166136261,
-          hash2 = 2166136261;
-        const seed1 = day.date + 'add',
-          seed2 = day.date + 'del';
-        for (let i = 0; i < seed1.length; i++) {
-          hash1 ^= seed1.charCodeAt(i);
-          hash1 = Math.imul(hash1, 16777619);
-        }
-        for (let i = 0; i < seed2.length; i++) {
-          hash2 ^= seed2.charCodeAt(i);
-          hash2 = Math.imul(hash2, 16777619);
-        }
-        const randAdd = (hash1 >>> 0) / 4294967296;
-        const randDel = (hash2 >>> 0) / 4294967296;
-
-        day.locAdditions = Math.floor(day.contributionCount * (25 + randAdd * 85));
-        day.locDeletions = Math.floor(day.contributionCount * (5 + randDel * 35));
-      } else {
-        day.locAdditions = 0;
-        day.locDeletions = 0;
-      }
-    });
-  });
+  // Do not fabricate Lines of Code metrics.
+  // GitHub's contribution calendar API does not expose per-day additions/deletions here,
+  // so LOC fields are intentionally left undefined instead of showing misleading values.
 
   calendar.lastSyncedAt = new Date().toISOString();
 
