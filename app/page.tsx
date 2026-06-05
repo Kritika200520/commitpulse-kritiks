@@ -93,6 +93,9 @@ function CountUp({ value, duration = 1000 }: { value: number; duration?: number 
     const start = 0;
     const end = value;
     if (start === end) {
+      // Safe: early-exit guard when the value hasn't changed — avoids scheduling
+      // a setInterval just to immediately clear it. No stale-dependency risk
+      // because `value` is the only dep and this path reads it synchronously.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setCount(end);
       return;
@@ -316,6 +319,10 @@ export default function LandingPage() {
   const [userDetailsLoading, setUserDetailsLoading] = useState(false);
   const [userDetailsError, setUserDetailsError] = useState<string | null>(null);
 
+  // SSR hydration guard: server and client both render with mounted=false so
+  // their initial output matches. After hydration this effect runs once,
+  // setting mounted=true so client-only UI (form button, validation hints)
+  // becomes interactive without a flash of mismatched content.
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
@@ -369,6 +376,9 @@ export default function LandingPage() {
   useEffect(() => {
     if (!mounted) return;
     if (debouncedUsername.length === 0) {
+      // Safe: synchronous reset of derived UI state when the input is cleared.
+      // These three setters always run together so there is no intermediate
+      // render with inconsistent state, and no async work is in flight.
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setUserDetails(null);
       setUserDetailsError(null);

@@ -84,6 +84,11 @@ function CustomizePageInner(): ReactElement {
   const searchParams = useSearchParams();
 
   // On mount: initialize state from URL search params
+  // Multiple setState calls are intentional here — we sync every customization
+  // control from the URL once on mount so that shared/bookmarked links restore
+  // the full editor state. Each setter corresponds to a single URL param and
+  // they all run synchronously in a single effect pass, so React batches them
+  // into one re-render. No stale-dependency risk: deps are intentionally [].
   /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     const u = searchParams.get('user') ?? '';
@@ -203,6 +208,9 @@ function CustomizePageInner(): ReactElement {
   }, [queryString, router]);
 
   useEffect(() => {
+    // Safe: resets error state as the first synchronous step when any preview
+    // dependency changes. The reset always precedes any async fetch or early
+    // return so there is no intermediate render with stale error text.
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setErrorMessage(null);
     if (!hasUsername) {
