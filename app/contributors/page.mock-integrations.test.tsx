@@ -24,6 +24,12 @@ describe('ContributorsPage Mock Integrations', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.resetModules();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => [],
+    } as unknown as Response);
   });
 
   it('renders successfully using mocked service data', async () => {

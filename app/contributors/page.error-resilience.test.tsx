@@ -21,6 +21,12 @@ vi.mock('./ContributorsClient', () => ({
 describe('ContributorsPage Error Resilience', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => [],
+    } as unknown as Response);
   });
 
   it('renders successfully under normal conditions', async () => {
@@ -34,8 +40,6 @@ describe('ContributorsPage Error Resilience', () => {
   });
 
   it('handles failed contributor fetches without crashing', async () => {
-    const originalFetch = global.fetch;
-
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
@@ -51,13 +55,9 @@ describe('ContributorsPage Error Resilience', () => {
     render(page);
 
     expect(screen.getByTestId('contributors-client')).toBeInTheDocument();
-
-    global.fetch = originalFetch;
   });
 
   it('handles rate limit responses gracefully', async () => {
-    const originalFetch = global.fetch;
-
     global.fetch = vi.fn().mockResolvedValue({
       ok: false,
       status: 429,
@@ -73,13 +73,9 @@ describe('ContributorsPage Error Resilience', () => {
     render(page);
 
     expect(screen.getByTestId('contributors-client')).toBeInTheDocument();
-
-    global.fetch = originalFetch;
   });
 
   it('passes empty contributor collections after fetch failures', async () => {
-    const originalFetch = global.fetch;
-
     global.fetch = vi.fn().mockRejectedValue(new Error('Database unavailable'));
 
     const { default: ContributorsPage } = await import('./page');
@@ -94,13 +90,9 @@ describe('ContributorsPage Error Resilience', () => {
 
     expect(props.contributors).toEqual([]);
     expect(props.topContributors).toEqual([]);
-
-    global.fetch = originalFetch;
   });
 
   it('continues rendering when unexpected service exceptions occur', async () => {
-    const originalFetch = global.fetch;
-
     global.fetch = vi.fn().mockRejectedValue(new Error('Unexpected runtime error'));
 
     const { default: ContributorsPage } = await import('./page');
@@ -110,7 +102,5 @@ describe('ContributorsPage Error Resilience', () => {
     render(page);
 
     expect(screen.getByTestId('contributors-client')).toBeInTheDocument();
-
-    global.fetch = originalFetch;
   });
 });
