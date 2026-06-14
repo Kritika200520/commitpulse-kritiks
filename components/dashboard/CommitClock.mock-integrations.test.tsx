@@ -4,6 +4,39 @@ import { render } from '@testing-library/react';
 import React from 'react';
 import CommitClock from './CommitClock';
 
+vi.mock('framer-motion', async () => {
+  const React = await import('react');
+
+  const stripMotionProps = (props: Record<string, unknown>) => {
+    const {
+      whileHover,
+      whileTap,
+      whileInView,
+      initial,
+      animate,
+      exit,
+      transition,
+      variants,
+      viewport,
+      ...rest
+    } = props;
+
+    return rest;
+  };
+
+  return {
+    motion: {
+      div: ({ children, ...props }: any) =>
+        React.createElement('div', stripMotionProps(props), children),
+
+      g: ({ children, ...props }: any) =>
+        React.createElement('g', stripMotionProps(props), children),
+    },
+
+    AnimatePresence: ({ children }: any) => children,
+  };
+});
+
 // 1. Mock Next.js router
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
