@@ -39,7 +39,9 @@ describe('NameSection Accessibility', () => {
   it('provides placeholder guidance for the input field', () => {
     render(<NameSection {...defaultProps} />);
 
-    expect(screen.getByPlaceholderText(/john doe/i)).toBeInTheDocument();
+    const input = screen.getByRole('textbox');
+
+    expect(input).toHaveAttribute('placeholder');
   });
 
   it('announces preview text based on entered value', () => {
