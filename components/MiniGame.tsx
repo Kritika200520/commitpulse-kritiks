@@ -142,7 +142,6 @@ export default function MiniGame() {
       className="w-full h-80 bg-[#0a0a0f] border border-white/10 rounded-2xl relative overflow-hidden shadow-[inset_0_0_50px_rgba(0,0,0,0.8),_0_0_30px_rgba(0,0,0,0.5)] cursor-crosshair select-none"
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Inline styles for shrinking rings */}
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -156,7 +155,6 @@ export default function MiniGame() {
         }}
       />
 
-      {/* HUD */}
       <div className="absolute top-3 left-4 right-4 flex justify-between font-bold text-sm z-10 pointer-events-none tracking-wider font-mono">
         <span className="text-[#38bdf8] drop-shadow-[0_0_8px_#38bdf8]">SCORE: {score}</span>
         <span className="text-[#f43f5e] drop-shadow-[0_0_8px_#f43f5e]">
@@ -167,7 +165,6 @@ export default function MiniGame() {
         </span>
       </div>
 
-      {/* Bugs */}
       {bugs.map((bug) => {
         const color = bug.type === 'critical' ? '#f43f5e' : '#eab308';
         return (
@@ -187,16 +184,16 @@ export default function MiniGame() {
         );
       })}
 
-      {/* Overlays */}
       {!isPlaying && !gameOver && (
         <div className="absolute inset-0 bg-black/70 backdrop-blur-sm flex flex-col justify-center items-center z-20 text-center">
-          <h2 className="text-xl text-white font-bold mb-2 tracking-wide">SQUASH THE BUGS</h2>
+          <div className="text-xl text-white font-bold mb-2 tracking-wide">SQUASH THE BUGS</div>
           <p className="text-gray-400 text-xs mb-6 font-mono">
             Click targets before the ring closes.
             <br />
             Avoid TLE!
           </p>
           <button
+            tabIndex={-1}
             onClick={startGame}
             className="px-6 py-2 border-2 border-[#38bdf8] text-white font-bold rounded-lg uppercase tracking-widest hover:bg-[#38bdf8] hover:text-black transition-all shadow-[0_0_15px_rgba(56,189,248,0.2)]"
           >
@@ -207,13 +204,14 @@ export default function MiniGame() {
 
       {gameOver && (
         <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col justify-center items-center z-20 text-center">
-          <h2 className="text-2xl text-[#f43f5e] font-black mb-2 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">
+          <div className="text-2xl text-[#f43f5e] font-black mb-2 drop-shadow-[0_0_15px_rgba(244,63,94,0.5)]">
             SYSTEM FAILURE
-          </h2>
+          </div>
           <p className="text-gray-400 text-sm mb-6 font-mono">
             Bugs Squashed: <span className="text-white font-bold">{score}</span>
           </p>
           <button
+            tabIndex={-1}
             onClick={startGame}
             className="px-6 py-2 border-2 border-[#f43f5e] text-white font-bold rounded-lg uppercase tracking-widest hover:bg-[#f43f5e] hover:text-black transition-all"
           >
