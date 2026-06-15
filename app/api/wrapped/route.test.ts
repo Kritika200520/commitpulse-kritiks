@@ -51,6 +51,7 @@ describe('GET /api/wrapped', () => {
     refreshPolicy.reset();
     refreshRateLimiter.reset();
     quotaMonitor.reset();
+    vi.mocked(getCircuitTelemetry).mockReturnValue({ isOpen: false, resetInMs: 0 });
     vi.mocked(getWrappedData).mockResolvedValue(mockWrappedStats);
     vi.mocked(fetchGitHubContributions).mockResolvedValue({
       calendar: mockCalendar,
