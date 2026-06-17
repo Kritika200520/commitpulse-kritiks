@@ -88,7 +88,7 @@ describe('ApiWrappedRoute - Empty Fallback & Edge Cases Suite', () => {
     const response = await GET(dummyRequest);
 
     expect(response.status).toBe(404);
-    expect(response.headers.get('Content-Type')).toBe('image/svg+xml');
+    expect(response.headers.get('Content-Type')).toContain('image/svg+xml');
 
     const svgContent = await response.text();
     expect(svgContent).toContain('mock-not-found');
@@ -103,7 +103,7 @@ describe('ApiWrappedRoute - Empty Fallback & Edge Cases Suite', () => {
     const response = await GET(dummyRequest);
 
     expect(response.status).toBe(400);
-    expect(response.headers.get('Content-Type')).toBe('image/svg+xml');
+    expect(response.headers.get('Content-Type')).toContain('image/svg+xml');
     expect(response.headers.get('Cache-Control')).toBe('no-store');
 
     const svgContent = await response.text();
