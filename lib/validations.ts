@@ -376,6 +376,8 @@ const baseStreakParamsSchema = z.object({
       'languages',
       'constellation',
       'radar',
+      'doughnut',
+      'pie',
     ])
     .catch('default')
     .default('default'),

@@ -284,7 +284,9 @@ export interface BadgeParams {
     | 'skyline'
     | 'languages'
     | 'constellation'
-    | 'radar';
+    | 'radar'
+    | 'doughnut'
+    | 'pie';
 
   /** Format for the monthly delta indicator. 'percent' shows %, 'absolute' shows raw count, 'both' shows both. */
   delta_format?: 'percent' | 'absolute' | 'both';

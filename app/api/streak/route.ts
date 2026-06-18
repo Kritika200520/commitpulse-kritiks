@@ -23,6 +23,7 @@ import {
 } from '@/lib/svg/generator';
 import { generateConstellationSVG } from '@/lib/svg/constellation';
 import { generateRadarSVG } from '@/lib/svg/radar';
+import { generateDoughnutSVG } from '@/lib/svg/doughnut';
 import { getSecondsUntilUTCMidnight, getSecondsUntilMidnightInTimezone } from '@/utils/time';
 import type { BadgeParams, RepoContribution, ExtendedContributionData } from '@/types';
 import { themes } from '@/lib/svg/themes';
@@ -166,7 +167,9 @@ export async function GET(request: Request) {
       | 'skyline'
       | 'languages'
       | 'constellation'
-      | 'radar';
+      | 'radar'
+      | 'doughnut'
+      | 'pie';
     const themeName = theme || 'dark';
 
     const ip = getClientIp(request);
@@ -548,6 +551,9 @@ export async function GET(request: Request) {
     } else if (normalizedView === 'radar') {
       const stats = calculateStreak(calendar, timezone, undefined, grace);
       svg = generateRadarSVG(stats, params, calendar);
+    } else if (normalizedView === 'doughnut' || normalizedView === 'pie') {
+      const stats = calculateStreak(calendar, timezone, undefined, grace);
+      svg = generateDoughnutSVG(stats, params, calendar);
     } else if (versus && versusCalendar) {
       // Normalize both calendars to the target timezone for accurate comparison
       const normalizedCalendar = normalizeCalendarToTimezone(calendar, timezone);
