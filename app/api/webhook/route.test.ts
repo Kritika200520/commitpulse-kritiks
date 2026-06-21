@@ -116,6 +116,22 @@ describe('POST /api/webhook', () => {
     expect(data.error).toBe('Payload too large');
   });
 
+  it('returns 413 when actual body exceeds 1MB despite small Content-Length', async () => {
+    process.env.GITHUB_WEBHOOK_SECRET = 'secret_key';
+    const largePayload = 'x'.repeat(1024 * 1024 + 1);
+    const req = makeRequest(
+      {
+        'content-length': '100',
+        'x-hub-signature-256': 'sha256=somesignature',
+      },
+      largePayload
+    );
+    const res = await POST(req);
+    expect(res.status).toBe(413);
+    const data = await res.json();
+    expect(data.error).toBe('Payload too large');
+  });
+
   it('returns 429 when rate limit is exceeded', async () => {
     process.env.GITHUB_WEBHOOK_SECRET = 'secret_key';
     const secret = 'secret_key';
